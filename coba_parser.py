@@ -91,7 +91,7 @@ if __name__ == '__main__':
     env = {}
     while True:
         try:
-            text = input('rhs > ')
+            text = input('amazone > ')
         except EOFError:
             break
         if text:
