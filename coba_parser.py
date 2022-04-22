@@ -6,84 +6,57 @@ class BasicParser(Parser):
     tokens = coba_lexer.BasicLexer.tokens
 
     precedence = (
-        ('left', '+', '-'),
-        ('left', '*', '/'),
-        ('right', 'UMINUS'),
+        ('left', PLUS, MINUS),
+        ('left', TIMES, DIVIDE),
+        ('right', UMINUS),
         )
 
     def __init__(self):
-        self.env = { }
-    @_('')
+        self.names = { }
+
+    @_('NAME ASSIGN expr')
     def statement(self, p):
-        pass
-
-    @_('FOR var_assign TO expr THEN statement')
-    def statement(self, p):
-        return ('for_loop', ('for_loop_setup', p.var_assign, p.expr), p.statement)
-
-    @_('IF condition THEN statement ELSE statement')
-    def statement(self, p):
-        return ('if_stmt', p.condition, ('branch', p.statement0, p.statement1))
-
-    @_('FUN NAME "(" ")" ARROW statement')
-    def statement(self, p):
-        return ('fun_def', p.NAME, p.statement)
-
-    @_('NAME "(" ")"')
-    def statement(self, p):
-        return ('fun_call', p.NAME)
-
-    @_('expr EQEQ expr')
-    def condition(self, p):
-        return ('condition_eqeq', p.expr0, p.expr1)
-
-    @_('var_assign')
-    def statement(self, p):
-        return p.var_assign
-
-    @_('NAME "=" expr')
-    def var_assign(self, p):
-        return ('var_assign', p.NAME, p.expr)
-
-    @_('NAME "=" STRING')
-    def var_assign(self, p):
-        return ('var_assign', p.NAME, p.STRING)
+        self.names[p.NAME] = p.expr
 
     @_('expr')
     def statement(self, p):
-        return (p.expr)
+        print(p.expr)
 
-    @_('expr "+" expr')
+    @_('expr PLUS expr')
     def expr(self, p):
-        return ('add', p.expr0, p.expr1)
+        return p.expr0 + p.expr1
 
-    @_('expr "-" expr')
+    @_('expr MINUS expr')
     def expr(self, p):
-        return ('sub', p.expr0, p.expr1)
+        return p.expr0 - p.expr1
 
-    @_('expr "*" expr')
+    @_('expr TIMES expr')
     def expr(self, p):
-        return ('mul', p.expr0, p.expr1)
+        return p.expr0 * p.expr1
 
-    @_('expr "/" expr')
+    @_('expr DIVIDE expr')
     def expr(self, p):
-        return ('div', p.expr0, p.expr1)
+        return p.expr0 / p.expr1
 
-    @_('"-" expr %prec UMINUS')
+    @_('MINUS expr %prec UMINUS')
+    def expr(self, p):
+        return -p.expr
+
+    @_('LPAREN expr RPAREN')
     def expr(self, p):
         return p.expr
 
-    @_('NAME')
-    def expr(self, p):
-        return ('var', p.NAME)
-
     @_('NUMBER')
     def expr(self, p):
-        return ('num', p.NUMBER)
-        
-    @_('PRINT expr')
+        return int(p.NUMBER)
+
+    @_('NAME')
     def expr(self, p):
-        return ('print', p.expr)
+        try:
+            return self.names[p.NAME]
+        except LookupError:
+            print(f'Undefined name {p.NAME!r}')
+            return 0
 
 if __name__ == '__main__':
     lexer = coba_lexer.BasicLexer()
@@ -95,5 +68,4 @@ if __name__ == '__main__':
         except EOFError:
             break
         if text:
-            tree = parser.parse(lexer.tokenize(text))
-            print(tree)
+            parser.parse(lexer.tokenize(text))
