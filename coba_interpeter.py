@@ -56,7 +56,7 @@ class BasicExecute:
             try:
                 return self.walkTree(self.env[node[1]])
             except LookupError:
-                print("Undefined function '%s'" % node[1])
+                print("Fungsi '%s' tak terdefinisi" % node[1])
                 return 0
 
         if node[0] == 'add':

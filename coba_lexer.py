@@ -1,13 +1,17 @@
 from sly import Lexer
  
 class BasicLexer(Lexer):
-    tokens = { NAME, NUMBER, STRING, PLUS, TIMES, MINUS, DIVIDE, ASSIGN, LPAREN, RPAREN }
+    tokens = { NAME, NUMBER, STRING, PLUS, TIMES, MINUS, DIVIDE, ASSIGN, LPAREN, RPAREN, FOR, TO, THEN}
     ignore = '\t '
 
     # Define tokens
+    FOR = r'untuk'
+    TO = r's/d'
+    THEN = r'ulang'
     NUMBER = r'\d+'
     NAME = r'[a-zA-Z_][a-zA-Z0-9_]*'
     STRING = r'\".*?\"'
+   
 
     # Simbol matematika
     PLUS = r'\+'
@@ -17,6 +21,7 @@ class BasicLexer(Lexer):
     ASSIGN = r'='
     LPAREN = r'\('
     RPAREN = r'\)'
+    
 
 
     @_(r'\d+')
