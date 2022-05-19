@@ -12,6 +12,6 @@ Alur Pembuatan
 1. Pembuatan token name, number, string
 2. Aritmatika
 3. Pendeklarasian variabel
-4. Logika percangan (if-else)
-5. Logika perulangan (looping)
-6. 
+4. Fungsi
+5. Logika percangan (if-else)
+6. Logika perulangan (looping)
