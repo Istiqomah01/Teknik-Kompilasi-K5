@@ -6,78 +6,87 @@ class BasicParser(Parser):
     tokens = coba_lexer.BasicLexer.tokens
 
     precedence = (
-        ('left', PLUS, MINUS),
-        ('left', TIMES, DIVIDE),
-        ('right', UMINUS),
+        ('left', '+', '-'),
+        ('left', '*', '/'),
+        ('right', 'UMINUS'),
         )
 
     def __init__(self):
-        self.names = { }
-
+        self.env = { }
     @_('')
     def statement(self, p):
         pass
 
+    #Literals
     @_('var_assign')
     def statement(self, p):
         return p.var_assign
-
-    @_('NAME ASSIGN expr')
-    def var_assign(self, p):
-        return ('var_assign', p.NAME, p.expr)
-    
-    @_('FOR var_assign TO expr THEN statement')
-    def statement(self, p):
-        return ('for_loop', ('for_loop_setup', p.var_assign, p.expr), p.statement)
 
     @_('expr')
     def statement(self, p):
         return (p.expr)
 
-    @_('expr PLUS expr')
+    @_('expr "+" expr')
     def expr(self, p):
         return ('add', p.expr0, p.expr1)
 
-    @_('expr MINUS expr')
+    @_('expr "-" expr')
     def expr(self, p):
         return ('sub', p.expr0, p.expr1)
 
-    @_('expr TIMES expr')
+    @_('expr "*" expr')
     def expr(self, p):
         return ('mul', p.expr0, p.expr1)
 
-    @_('expr DIVIDE expr')
+    @_('expr "/" expr')
     def expr(self, p):
         return ('div', p.expr0, p.expr1)
 
-    @_('MINUS expr %prec UMINUS')
+    @_('"-" expr %prec UMINUS')
     def expr(self, p):
         return p.expr
 
-    @_('LPAREN expr RPAREN')
+    #Tokens
+    @_('NAME')
     def expr(self, p):
-        return p.expr
+        return ('var', p.NAME)
 
     @_('NUMBER')
     def expr(self, p):
         return ('num', p.NUMBER)
 
-    @_('NAME')
-    def expr(self, p):
-        try:
-            return ('var', p.NAME)
-        except LookupError:
-            print(f'Undefined name {p.NAME!r}')
-            return 0
+    @_('NAME "=" STRING')
+    def var_assign(self, p):
+        return ('var_assign', p.NAME, p.STRING)
 
-if __name__ == '__main__':
-    lexer = coba_lexer.BasicLexer()
-    parser = BasicParser()
-    env = {}
-    while True:
-        try:
-            text = input('amazone > ')
-        except EOFError:
-            break
-        if text:
-            parser.parse(lexer.tokenize(text))
+    @_('NAME "=" expr')
+    def var_assign(self, p):
+        return ('var_assign', p.NAME, p.expr)
+
+    @_('PRINT STRING')
+    def statement(self, p):
+        return ('print', p.STRING)
+
+    @_('PRINT expr')
+    def expr(self, p):
+        return ('print', p.expr)
+
+    @_('FOR var_assign TO expr THEN statement')
+    def statement(self, p):
+        return ('for_loop', ('for_loop_setup', p.var_assign, p.expr), p.statement)
+
+    @_('IF condition THEN statement ELSE statement')
+    def statement(self, p):
+        return ('if_stmt', p.condition, ('branch', p.statement0, p.statement1))
+
+    @_('FUNCTION NAME "(" ")" ARROW statement')
+    def statement(self, p):
+        return ('fun_def', p.NAME, p.statement)
+
+    @_('NAME "(" ")"')
+    def statement(self, p):
+        return ('fun_call', p.NAME)
+
+    @_('expr EQEQ expr')
+    def condition(self, p):
+        return ('condition_eqeq', p.expr0, p.expr1)

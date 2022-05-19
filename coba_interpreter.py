@@ -3,6 +3,7 @@ import coba_lexer
 import coba_parser
 
 class BasicExecute:
+
     def __init__(self, tree, env):
         self.env = env
         result = self.walkTree(tree)
@@ -28,27 +29,33 @@ class BasicExecute:
                 self.walkTree(node[1])
                 self.walkTree(node[2])
 
+        #num
         if node[0] == 'num':
             return node[1]
 
+        #str
         if node[0] == 'str':
             return node[1]
 
+        #print
         if node[0] == 'print':
             if node[1][0] == '"':
                 print(node[1][1:len(node[1])-1])
             else:
                 return self.walkTree(node[1])
 
+        #if
         if node[0] == 'if_stmt':
             result = self.walkTree(node[1])
             if result:
                 return self.walkTree(node[2][1])
             return self.walkTree(node[2][2])
 
+        #eq
         if node[0] == 'condition_eqeq':
             return self.walkTree(node[1]) == self.walkTree(node[2])
 
+        #function
         if node[0] == 'fun_def':
             self.env[node[1]] = node[2]
 
@@ -56,22 +63,31 @@ class BasicExecute:
             try:
                 return self.walkTree(self.env[node[1]])
             except LookupError:
-                print("Fungsi '%s' tak terdefinisi" % node[1])
+                print("Undefined function '%s'" % node[1])
                 return 0
 
+        #add
         if node[0] == 'add':
             return self.walkTree(node[1]) + self.walkTree(node[2])
+        
+        #substract
         elif node[0] == 'sub':
             return self.walkTree(node[1]) - self.walkTree(node[2])
+        
+        #multiply
         elif node[0] == 'mul':
             return self.walkTree(node[1]) * self.walkTree(node[2])
+        
+        #divide
         elif node[0] == 'div':
             return int(self.walkTree(node[1]) / self.walkTree(node[2]))
 
+        #var_assign
         if node[0] == 'var_assign':
             self.env[node[1]] = self.walkTree(node[2])
             return node[1]
 
+        #var
         if node[0] == 'var':
             try:
                 return self.env[node[1]]
@@ -79,6 +95,7 @@ class BasicExecute:
                 print("Undefined variable '"+node[1]+"' found!")
                 return 0
 
+        #for
         if node[0] == 'for_loop':
             if node[1][0] == 'for_loop_setup':
                 loop_setup = self.walkTree(node[1])
@@ -95,16 +112,3 @@ class BasicExecute:
 
         if node[0] == 'for_loop_setup':
             return (self.walkTree(node[1]), self.walkTree(node[2]))
-
-if __name__ == '__main__':
-    lexer = coba_lexer.BasicLexer()
-    parser = coba_parser.BasicParser()
-    env = {}
-    while True:
-        try:
-            text = input('amazone > ')
-        except EOFError:
-            break
-        if text:
-            tree = parser.parse(lexer.tokenize(text))
-            BasicExecute(tree, env)
