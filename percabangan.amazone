@@ -1,0 +1,6 @@
+umur=30
+dewasa="Dia tergolong usia dewasa"
+lansia="Dia tergolong usia lansia!"
+
+tampil "Tebak usia menengah hingga keatas!"
+jika umur == 70 ulang tampil lansia maka tampil dewasa
