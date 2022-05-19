@@ -1,0 +1,14 @@
+tampil "Contoh Progam Perhitungan Artimatika"
+tampil "Carilah Luas Persegi Panjang ABCD dengan p=15 dan l=8"
+p=15
+l=8
+L=p*l
+tampil "Luas = panjang x lebar"
+tampil "Luas = 8*15"
+tampil "Luas ="
+L
+
+tampil "Contoh Progam Perhitungan Artimatika"
+tampil "Hitunglah hasil dari 15/3*4+8"
+tampil "Hasil dari 15/3*4+8 adalah ="
+15/3*4+8
