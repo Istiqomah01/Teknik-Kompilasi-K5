@@ -1,0 +1,12 @@
+tampil "Program Perulangan"
+k
+untuk i=0 s/d 6 ulang k=k+1
+
+tampil "Program Perulangan"
+a=10
+untuk i=0 s/d 5 ulang a+1
+
+tampil "Program Perulangan"
+a=10
+untuk i=0 s/d 5 ulang a = a+1
+a
